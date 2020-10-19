@@ -12,24 +12,38 @@ import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // loads up layout resource
         setContentView(R.layout.activity_note);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+        // used for spinner
+        Spinner spinnerCourses = findViewById(R.id.spinner_courses);
+
+        // Load in data to spinner - thats in file
+        List<CourseInfo> courses = DataManager.getInstance().getCourses();
+
+        // can be used with arrays or list
+        // below format the selected item in our spinner
+        ArrayAdapter<CourseInfo> adapterCourses =
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, courses);
+        // dropdown list of courses
+        adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        //Associates adapter with Spinner
+        spinnerCourses.setAdapter(adapterCourses);
+
     }
 
     @Override
