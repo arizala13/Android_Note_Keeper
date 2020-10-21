@@ -39,7 +39,8 @@ public class NoteListActivity extends AppCompatActivity {
 
     // call to method - to add a list of all the notes
     private void initializeDisplayContent() {
-        ListView listNotes = findViewById(R.id.list_notes);
+        // marking as final allows it to be called within anonymous class
+        final ListView listNotes = findViewById(R.id.list_notes);
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
 
@@ -54,6 +55,11 @@ public class NoteListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
+                NoteInfo note = (NoteInfo) listNotes.getItemAtPosition(position);
+                // note passed - allows user to make selection
+                // then note is sent over to note activity
+                intent.putExtra(NoteActivity.NOTE_INFO, note);
+
                 startActivity(intent);
             }
         });

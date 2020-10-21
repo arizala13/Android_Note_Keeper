@@ -1,5 +1,6 @@
 package com.example.note_keeper;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -13,11 +14,15 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
+
+    public static final String NOTE_INFO = "com.example.note_keeper.NOTE_INFO";
+    private NoteInfo mNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,38 @@ public class NoteActivity extends AppCompatActivity {
 
         //Associates adapter with Spinner
         spinnerCourses.setAdapter(adapterCourses);
+
+        readDisplayStateValues();
+
+        // get title and text
+        EditText textNoteTitle = findViewById(R.id.text_note_title);
+        EditText textNoteText = findViewById(R.id.text_note_text);
+
+        // pass in local variables
+        displayNote(spinnerCourses, textNoteTitle, textNoteText);
+
+    }
+
+    private void displayNote(Spinner spinnerCourses, EditText textNoteTitle, EditText textNoteText) {
+        // get list of courses from data manager
+        List<CourseInfo> courses = DataManager.getInstance().getCourses();
+
+        int courseIndex = courses.indexOf(mNote.getCourse());
+
+        spinnerCourses.setSelection(courseIndex);
+
+        // sets the title
+        textNoteTitle.setText(mNote.getTitle());
+
+        textNoteText.setText(mNote.getText());
+    }
+
+    private void readDisplayStateValues() {
+        Intent intent = getIntent();
+        // mNote because android studio knows we want
+        mNote = intent.getParcelableExtra(NOTE_INFO);
+        // member fields to be preceded by m
+        NoteInfo mNote = intent.getParcelableExtra(NOTE_INFO);
 
     }
 
