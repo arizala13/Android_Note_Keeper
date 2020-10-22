@@ -23,6 +23,7 @@ public class NoteActivity extends AppCompatActivity {
 
     public static final String NOTE_INFO = "com.example.note_keeper.NOTE_INFO";
     private NoteInfo mNote;
+    private boolean mIsNewNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,10 @@ public class NoteActivity extends AppCompatActivity {
         EditText textNoteText = findViewById(R.id.text_note_text);
 
         // pass in local variables
-        displayNote(spinnerCourses, textNoteTitle, textNoteText);
+
+        // display note if created, if not it is new - do not display
+        if(!mIsNewNote)
+            displayNote(spinnerCourses, textNoteTitle, textNoteText);
 
     }
 
@@ -80,6 +84,9 @@ public class NoteActivity extends AppCompatActivity {
         mNote = intent.getParcelableExtra(NOTE_INFO);
         // member fields to be preceded by m
         NoteInfo mNote = intent.getParcelableExtra(NOTE_INFO);
+        // check if note is null
+        mIsNewNote = mNote == null;
+
 
     }
 
