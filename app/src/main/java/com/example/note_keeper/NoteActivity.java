@@ -3,13 +3,8 @@ package com.example.note_keeper;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,9 +16,13 @@ import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
 
-    public static final String NOTE_INFO = "com.example.note_keeper.NOTE_INFO";
+    public static final String NOTE_POSITION = "com.example.note_keeper.NOTE_POSITION";
+    public static final int POSITION_NOT_SET = -1;
     private NoteInfo mNote;
     private boolean mIsNewNote;
+    private Spinner mSpinnerCourses;
+    private EditText mTextNoteTitle;
+    private EditText mTextNoteText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class NoteActivity extends AppCompatActivity {
 
 
         // used for spinner
-        Spinner spinnerCourses = findViewById(R.id.spinner_courses);
+        mSpinnerCourses = findViewById(R.id.spinner_courses);
 
         // Load in data to spinner - thats in file
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
@@ -48,19 +47,19 @@ public class NoteActivity extends AppCompatActivity {
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         //Associates adapter with Spinner
-        spinnerCourses.setAdapter(adapterCourses);
+        mSpinnerCourses.setAdapter(adapterCourses);
 
         readDisplayStateValues();
 
         // get title and text
-        EditText textNoteTitle = findViewById(R.id.text_note_title);
-        EditText textNoteText = findViewById(R.id.text_note_text);
+        mTextNoteTitle = findViewById(R.id.text_note_title);
+        mTextNoteText = findViewById(R.id.text_note_text);
 
         // pass in local variables
 
         // display note if created, if not it is new - do not display
         if(!mIsNewNote)
-            displayNote(spinnerCourses, textNoteTitle, textNoteText);
+            displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
 
     }
 
@@ -80,13 +79,14 @@ public class NoteActivity extends AppCompatActivity {
 
     private void readDisplayStateValues() {
         Intent intent = getIntent();
-        // mNote because android studio knows we want
-        mNote = intent.getParcelableExtra(NOTE_INFO);
         // member fields to be preceded by m
-        NoteInfo mNote = intent.getParcelableExtra(NOTE_INFO);
+        // if not found, we pass in POSITION_NOT_SET (-1)
+        int position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
         // check if note is null
-        mIsNewNote = mNote == null;
-
+        mIsNewNote = position == POSITION_NOT_SET;
+        // if not new, we get that note at that position
+        if(!mIsNewNote)
+            mNote = DataManager.getInstance().getNotes().get(position);
 
     }
 
@@ -105,10 +105,30 @@ public class NoteActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_send_mail) {
+            sendEmail();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // implicit intent to send email with not e
+    private void sendEmail() {
+        CourseInfo course = (CourseInfo) mSpinnerCourses.getSelectedItem();
+        String subject = mTextNoteTitle.getText().toString();
+        // gives email a body
+        String text = "Check out what I learned in this course \"" +
+                course.getTitle() + "\"\n" + mTextNoteText.getText();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        // tells it its an email
+        intent.setType("message/rfc2822");
+
+        // subject
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        // body
+        intent.putExtra(Intent.EXTRA_SUBJECT, text);
+        // intent makes difference
+        startActivity(intent);
     }
 }

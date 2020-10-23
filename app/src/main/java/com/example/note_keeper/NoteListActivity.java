@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -55,10 +54,10 @@ public class NoteListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
-                NoteInfo note = (NoteInfo) listNotes.getItemAtPosition(position);
+//                NoteInfo note = (NoteInfo) listNotes.getItemAtPosition(position);
                 // note passed - allows user to make selection
                 // then note is sent over to note activity
-                intent.putExtra(NoteActivity.NOTE_INFO, note);
+                intent.putExtra(NoteActivity.NOTE_POSITION, position);
 
                 startActivity(intent);
             }
