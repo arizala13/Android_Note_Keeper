@@ -25,6 +25,9 @@ public class NoteActivity extends AppCompatActivity {
     private EditText mTextNoteText;
     private int mNotePosition;
     private boolean mIsCancelling;
+    private String mOriginalNoteCourseId;
+    private String mOriginalNoteTitle;
+    private String mOriginalNoteText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class NoteActivity extends AppCompatActivity {
         mSpinnerCourses.setAdapter(adapterCourses);
 
         readDisplayStateValues();
+        saveOriginalNoteValues();
 
         // get title and text
         mTextNoteTitle = findViewById(R.id.text_note_title);
@@ -65,6 +69,18 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
+    private void saveOriginalNoteValues() {
+        //check if note is new
+        if(mIsNewNote)
+            return;
+        mOriginalNoteCourseId = mNote.getCourse().getCourseId();
+
+        mOriginalNoteTitle = mNote.getTitle();
+
+        mOriginalNoteText = mNote.getText();
+
+    }
+
     // when you leave the note
     @Override
     protected void onPause() {
@@ -73,10 +89,21 @@ public class NoteActivity extends AppCompatActivity {
             // remove from storing if new note
             if(mIsNewNote) {
                 DataManager.getInstance().removeNote(mNotePosition);
+            } else {
+                // if we cancel we save original values
+                storePreviousNoteValues();
             }
         } else {
             saveNote();
         }
+    }
+
+    private void storePreviousNoteValues() {
+        CourseInfo course = DataManager.getInstance().getCourse(mOriginalNoteCourseId);
+        mNote.setCourse(course);
+        // put original values right back
+        mNote.setTitle(mOriginalNoteTitle);
+        mNote.setText(mOriginalNoteText);
     }
 
     // allows saving of note
