@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,9 +26,8 @@ public class NoteActivity extends AppCompatActivity {
     private EditText mTextNoteText;
     private int mNotePosition;
     private boolean mIsCancelling;
-    private String mOriginalNoteCourseId;
-    private String mOriginalNoteTitle;
-    private String mOriginalNoteText;
+
+    private NoteActivityViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,11 @@ public class NoteActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // system manages ViewModel
+        ViewModelProvider viewModelProvider = new ViewModelProvider(getViewModelStore(),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()));
+
+        mViewModel = viewModelProvider.get(NoteActivityViewModel.class);
 
         // used for spinner
         mSpinnerCourses = findViewById(R.id.spinner_courses);
@@ -73,11 +78,9 @@ public class NoteActivity extends AppCompatActivity {
         //check if note is new
         if(mIsNewNote)
             return;
-        mOriginalNoteCourseId = mNote.getCourse().getCourseId();
-
-        mOriginalNoteTitle = mNote.getTitle();
-
-        mOriginalNoteText = mNote.getText();
+        mViewModel.mOriginalNoteCourseId = mNote.getCourse().getCourseId();
+        mViewModel.mOriginalNoteTitle = mNote.getTitle();
+        mViewModel.mOriginalNoteText = mNote.getText();
 
     }
 
@@ -99,11 +102,11 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void storePreviousNoteValues() {
-        CourseInfo course = DataManager.getInstance().getCourse(mOriginalNoteCourseId);
+        CourseInfo course = DataManager.getInstance().getCourse(mViewModel.mOriginalNoteCourseId);
         mNote.setCourse(course);
         // put original values right back
-        mNote.setTitle(mOriginalNoteTitle);
-        mNote.setText(mOriginalNoteText);
+        mNote.setTitle(mViewModel.mOriginalNoteTitle);
+        mNote.setText(mViewModel.mOriginalNoteText);
     }
 
     // allows saving of note
