@@ -3,6 +3,7 @@ package com.example.note_keeper;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
@@ -107,6 +108,13 @@ public class NoteActivity extends AppCompatActivity {
         // put original values right back
         mNote.setTitle(mViewModel.mOriginalNoteTitle);
         mNote.setText(mViewModel.mOriginalNoteText);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(outState != null)
+            mViewModel.saveState(outState);
     }
 
     // allows saving of note
